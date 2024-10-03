@@ -1,13 +1,18 @@
-from typing import Dict
+from typing import Dict, List, Callable
 
 from langchain_core.tools import BaseTool
+
+from langchain_cfg_build.obj.cache_provider import CacheProvider
 
 _ALL_TOOL_MAP: Dict[str, BaseTool] = dict()
 
 
 class ToolRepository:
     def __init__(self):
-        pass
+        self._provider_list: List[CacheProvider[BaseTool]] = list()
+
+    def add_tool(self, tool_name: str, provide: Callable[[], BaseTool]):
+        self._provider_list.append(CacheProvider[BaseTool](tool_name, _ALL_TOOL_MAP, provide))
 
 
 instance: ToolRepository = None
