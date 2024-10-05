@@ -2,7 +2,8 @@ from typing import List, Union, cast
 
 from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent, create_react_agent, AgentExecutor
 from langchain_core.tools import BaseTool
-
+from langchain import hub
+from langchain_cfg_build import get_root_path
 from langchain_cfg_build.app import initialize
 from langchain_cfg_build.llm.enum_llm import EnumLLM
 from langchain_cfg_build.prompt.enum_prompt import EnumPrompt
@@ -11,17 +12,17 @@ from langchain_cfg_build.prompt.enum_prompt import EnumPrompt
 class AgentBuilder:
     llm: EnumLLM
     tools_cfg_list: List[dict]
-    prompt: EnumPrompt
+    prompt: str
 
     def __init__(self,
                  llm: EnumLLM,
                  tools_cfg_list: List[dict],
-                 prompt: EnumPrompt
+                 prompt: str
                  ):
         self.llm = llm
         self.prompt = prompt
         self.tools_cfg_list = tools_cfg_list
-        self._tools: List[BaseTool] = self._list_tool_instance_by_cfg()
+        self._tools: List[BaseTool] = []
 
     def __repr__(self):
         tools_repr = ", ".join(tool.name for tool in self.tools)
@@ -29,14 +30,12 @@ class AgentBuilder:
                 f"tools=[{tools_repr}], "
                 f"prompt={self.prompt.name})")
 
-    def _list_tool_instance_by_cfg(self) -> List[BaseTool]:
-        return [tool_service.gen_tool(**tool) for tool in self.tools_cfg_list]
-
     def create_agent(self) -> Union[BaseSingleActionAgent, BaseMultiActionAgent]:
         # tools = self.list_tool_instance()
         # tools.extend(self.list_tool_instance_by_cfg())
+        prompt_temp = hub.pull(self.prompt)
         return cast(BaseSingleActionAgent,
-                    create_react_agent(self.llm.value.get_instance(), self._tools, self.prompt.value.get_instance()))
+                    create_react_agent(self.llm.value.get_instance(), self._tools, prompt_temp))
 
     def build_executor(self) -> AgentExecutor:
         agent = self.create_agent()
@@ -45,11 +44,11 @@ class AgentBuilder:
 
 
 if __name__ == '__main__':
-    initialize()
+    initialize(get_root_path())
     agent_builder = AgentBuilder(
         EnumLLM.gpt_4o,
         [],
-        EnumPrompt.HWCHASE17_REACT
+        "hwchase17/react"
     )
     agent_executor = agent_builder.build_executor()
     # query = "Please help me find domiearth company email?"
