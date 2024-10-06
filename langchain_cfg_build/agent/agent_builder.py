@@ -39,7 +39,7 @@ class AgentBuilder:
 
     def build_executor(self) -> AgentExecutor:
         agent = self.create_agent()
-        ans = AgentExecutor(agent=agent, tools=self._tools, verbose=True, )
+        ans = AgentExecutor(agent=agent, tools=self._tools, verbose=True,handle_parsing_errors=True )
         return ans
 
 
