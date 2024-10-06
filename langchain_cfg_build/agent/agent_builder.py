@@ -1,4 +1,4 @@
-from typing import List, Union, cast
+from typing import List, Union, cast, Optional
 
 from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent, create_react_agent, AgentExecutor
 from langchain_core.tools import BaseTool
@@ -30,16 +30,21 @@ class AgentBuilder:
                 f"tools=[{tools_repr}], "
                 f"prompt={self.prompt.name})")
 
+    def list_tool_list(self) -> Optional[List[BaseTool]]:
+        if self.tools_cfg_list:
+            return self._tools
+        return self._tools
+
     def create_agent(self) -> Union[BaseSingleActionAgent, BaseMultiActionAgent]:
         # tools = self.list_tool_instance()
         # tools.extend(self.list_tool_instance_by_cfg())
         prompt_temp = hub.pull(self.prompt)
         return cast(BaseSingleActionAgent,
-                    create_react_agent(self.llm.value.get_instance(), self._tools, prompt_temp))
+                    create_react_agent(self.llm.value.get_instance(), self.list_tool_list(), prompt_temp))
 
     def build_executor(self) -> AgentExecutor:
         agent = self.create_agent()
-        ans = AgentExecutor(agent=agent, tools=self._tools, verbose=True,handle_parsing_errors=True )
+        ans = AgentExecutor(agent=agent, tools=self.list_tool_list(), verbose=True, handle_parsing_errors=True)
         return ans
 
 
