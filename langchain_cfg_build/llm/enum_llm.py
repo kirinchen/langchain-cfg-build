@@ -11,6 +11,8 @@ _ALL_LLM_MAP: Dict[str, BaseLanguageModel] = dict()
 
 class EnumLLM(Enum):
     gpt_4o = CacheProvider[BaseLanguageModel]("gpt_4o", _ALL_LLM_MAP, lambda: ChatOpenAI(model_name="gpt-4"))
+    gpt_4o_mini = CacheProvider[BaseLanguageModel]("gpt_4o_mini", _ALL_LLM_MAP,
+                                                   lambda: ChatOpenAI(model_name="gpt-4o-mini"))
     # gpt_4o: BaseLanguageModel = ChatOpenAI(model_name="gpt-4")
 
 

@@ -25,12 +25,21 @@ def _test_document_generator() -> Iterator[List[Document]]:
     for i in range(20):  # Example of generating 1000 batches
         print(f"Generating {i}")
         yield [Document(
-            page_content=f"1This is document {i+1}. It contains some sample text.",
-            metadata={"source_url": f"https://1example.com/document/{i+1}"}
+            page_content=f"1This is document {i + 1}. It contains some sample text.",
+            metadata={"source_url": f"https://1example.com/document/{i + 1}"}
         ), Document(
-            page_content=f"1This is another document {i+1}. It contains more sample text.",
-            metadata={"source_url": f"https://2example.com/document/{i+1}"}
+            page_content=f"1This is another document {i + 1}. It contains more sample text.",
+            metadata={"source_url": f"https://2example.com/document/{i + 1}"}
         )]
+
+
+def trim_metadata_dict(input_dict: dict) -> dict:
+    """
+    Recursively trims a dictionary to ensure all values are of type str, int, float, or bool.
+    It removes any entries that do not conform to these types.
+    """
+    return {key: value for key, value in input_dict.items()
+            if isinstance(value, (str, int, float, bool))}
 
 
 if __name__ == '__main__':

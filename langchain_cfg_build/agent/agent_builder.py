@@ -24,6 +24,9 @@ class AgentBuilder:
         self.tools_cfg_list = tools_cfg_list
         self._tools: List[BaseTool] = []
 
+    def add_tool(self, tool: BaseTool):
+        self._tools.append(tool)
+
     def __repr__(self):
         tools_repr = ", ".join(tool.name for tool in self.tools)
         return (f"AgentBuilder(llm={self.llm.name}, "
