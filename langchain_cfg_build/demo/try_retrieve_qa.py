@@ -3,7 +3,7 @@ from typing import List
 
 from langchain_core.documents import Document
 
-from langchain_cfg_build import app
+from langchain_cfg_build import langchain_cfg_build_app
 from langchain_cfg_build.agent.agent_builder import AgentBuilder
 from langchain_cfg_build.embed_db import embed_db_query_service
 from langchain_cfg_build.embed_db.embed_db_loader import EmbedDbLoader

@@ -4,7 +4,7 @@ from langchain.agents import BaseSingleActionAgent, BaseMultiActionAgent, create
 from langchain_core.tools import BaseTool
 from langchain import hub
 from langchain_cfg_build import get_root_path
-from langchain_cfg_build.app import initialize
+from langchain_cfg_build.langchain_cfg_build_app import initialize
 from langchain_cfg_build.llm.enum_llm import EnumLLM
 from langchain_cfg_build.prompt.enum_prompt import EnumPrompt
 
