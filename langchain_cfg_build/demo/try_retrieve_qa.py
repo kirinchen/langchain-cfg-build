@@ -34,7 +34,7 @@ def invoke_query(query: str):
 
 if __name__ == '__main__':
     env_path = Path(__file__).parent.parent.parent
-    app.initialize(str(env_path))
+    langchain_cfg_build_app.initialize(str(env_path))
     # resp = invoke_query(query='BigCoCo 是什麼?')
     # print(resp)
 
