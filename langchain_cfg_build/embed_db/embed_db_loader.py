@@ -1,22 +1,29 @@
 from dataclasses import dataclass
 
-from langchain_chroma import Chroma
+from langchain_core.vectorstores import VectorStore
 from langchain_openai import OpenAIEmbeddings
+from langchain_postgres import PGVector
 
 
 @dataclass
 class EmbedDbLoader:
-    local_path: str = None
-    _db: Chroma = None
+    connection: str = None
+    collection_name: str = None
+    table_name: str = None  # Custom table name
+    content_column: str = "text"  # Custom content column name
+    _db: VectorStore = None
 
-    def load(self) -> Chroma:
+    def load(self) -> VectorStore:
         if not self._db:
             self._db = self._load()
         return self._db
 
-    def _load(self) -> Chroma:
+    def _load(self) -> VectorStore:
         embeddings = OpenAIEmbeddings()
-        if self.local_path:
-            db = Chroma(persist_directory=self.local_path, embedding_function=embeddings)
-            return db
-        raise NotImplementedError(f"{self.__dict__} EmbedDbLoader load is not implemented!")
+        pgvector_store = PGVector(
+            collection_name=self.collection_name,
+            connection=self.connection,
+            embeddings=embeddings,
+            table_name=self.table_name
+        )
+        return pgvector_store

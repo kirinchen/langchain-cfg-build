@@ -1,23 +1,15 @@
-import os
 from typing import Iterator, List
 
-from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
+from langchain_core.vectorstores import VectorStore
 
-from langchain_cfg_build.infra import config
-from langchain_cfg_build.utils import file_utils
+from langchain_cfg_build.embed_db.embed_db_loader import EmbedDbLoader
 
 
-def save_embed_db(db_path: str, doc_iterator: Iterator[List[Document]]) -> str:
-    exist_db_folder = os.path.exists(db_path)
-    if exist_db_folder:
-        file_utils.delete_folder_and_contents(db_path)
-    embeddings = OpenAIEmbeddings()
-    db = Chroma(persist_directory=db_path, embedding_function=embeddings)
+def save_embed_db(db_loader: EmbedDbLoader, doc_iterator: Iterator[List[Document]]) :
+    v_store: VectorStore = db_loader.load()
     for doc_list in doc_iterator:
-        db.add_documents(doc_list)
-    return db_path
+        v_store.add_documents(doc_list)
 
 
 def _test_document_generator() -> Iterator[List[Document]]:
@@ -40,12 +32,3 @@ def trim_metadata_dict(input_dict: dict) -> dict:
     """
     return {key: value for key, value in input_dict.items()
             if isinstance(value, (str, int, float, bool))}
-
-
-if __name__ == '__main__':
-    config.load_env()
-    _test_it = _test_document_generator()
-    print(_test_it)
-    wd_path = os.path.dirname(__file__)
-    db_path = wd_path + '/_db'
-    db_path = save_embed_db(db_path, _test_it)
